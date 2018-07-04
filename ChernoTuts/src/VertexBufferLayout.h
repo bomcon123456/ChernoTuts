@@ -26,6 +26,7 @@ class VertexBufferLayout
 {
 private:
 	std::vector<VertexBufferElement> m_Elements;
+	// m_Stride: how many bytes to go to the next vertex
 	unsigned int m_Stride;
 public:
 	VertexBufferLayout(): m_Stride(0) {};
@@ -36,6 +37,7 @@ public:
 		static_assert(false);
 	}
 
+	// we push an VertexBufferElement to the "m_Elements"
 	template<>
 	void Push<float>(unsigned int count)
 	{
