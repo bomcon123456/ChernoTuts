@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2026
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ChernoTuts", "ChernoTuts\ChernoTuts.vcxproj", "{B3C5DC1E-392E-4FB4-BB9C-2DC6162B814F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B3C5DC1E-392E-4FB4-BB9C-2DC6162B814F}.Debug|x64.ActiveCfg = Debug|x64
+		{B3C5DC1E-392E-4FB4-BB9C-2DC6162B814F}.Debug|x64.Build.0 = Debug|x64
+		{B3C5DC1E-392E-4FB4-BB9C-2DC6162B814F}.Debug|x86.ActiveCfg = Debug|Win32
+		{B3C5DC1E-392E-4FB4-BB9C-2DC6162B814F}.Debug|x86.Build.0 = Debug|Win32
+		{B3C5DC1E-392E-4FB4-BB9C-2DC6162B814F}.Release|x64.ActiveCfg = Release|x64
+		{B3C5DC1E-392E-4FB4-BB9C-2DC6162B814F}.Release|x64.Build.0 = Release|x64
+		{B3C5DC1E-392E-4FB4-BB9C-2DC6162B814F}.Release|x86.ActiveCfg = Release|Win32
+		{B3C5DC1E-392E-4FB4-BB9C-2DC6162B814F}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C619E8A3-EE30-4222-A468-FB29D7D1A287}
+	EndGlobalSection
+EndGlobal
