@@ -9,6 +9,8 @@
 #include "Texture.h"
 #include "Shader.h"
 
+#include "tests/TestClearColor.h"
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -50,55 +52,8 @@ int main(void)
 		std::cout << "Error Glew_INIT" << std::endl;
 	}
 	{
-		float verticies[] = {
-			-50.0f,-50.0f, 0.0f, 0.0f,
-			 50.0f,-50.0f, 1.0f, 0.0f,
-			 50.0f, 50.0f, 1.0f, 1.0f,
-			-50.0f, 50.0f, 0.0f, 1.0f
-		};
-
-		unsigned int indices[] = {
-			0, 1, 2,
-			2, 3, 0
-		};
-
 		GLCall(glEnable(GL_BLEND));
 		GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
-
-		VertexArray vao;
-		VertexBuffer vbo(verticies, 4 * 4 * sizeof(float));
-		VertexBufferLayout layout;
-
-		layout.Push<float>(2);
-		layout.Push<float>(2);
-		vao.AddBuffer(vbo, layout);
-
-		IndexBuffer ibo(indices, 6);
-
-		/*
-		 * Basically because our window is 640x480 ~ 4:3
-		 * Those params * 2 => 4:3
-		 * Create sth has a distance of 3 units (top-bottom) and 4 units (left-right)
-		 * Essentially we're creating the boundaries for the window, e.g if we set params -4.0,4.0,-3.0,3.0, the picture will be twice as smaller
-		 * UPDATE:
-		 * So now, we will work everything in pixel space (yes, verts too), then multiply those two together, we will have the normalized value that
-		 * suits the [-1.0f,1.0f] axis
-		 */
-		glm::mat4 proj = glm::ortho(0.0f, 960.0f, 0.0f, 540.0f, -1.0f, 1.0f);
-		glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-
-		Shader shader("res/shaders/Basic.shader");
-		shader.Bind();
-		shader.SetUniform4f("u_Color", 0.1f, 0.6f, 0.9f,1.0f);
-
-		Texture texture("res/textures/agave.png");
-		texture.Bind(0);
-		shader.SetUniform1i("u_Texture",0);
-
-		vao.Unbind();
-		shader.Unbind();
-		vbo.Unbind();
-		ibo.Unbind();
 
 		Renderer renderer;
 
@@ -109,61 +64,21 @@ int main(void)
 
 		//						IMGUI
 
-		glm::vec3 translationA(200.0f, 200.0f, 0.0f);
-		glm::vec3 translationB(400.0f, 200.0f, 0.0f);
+		test::TestClearColor test;
 
-		float r = 0.0f;
-		float increment = 0.05f;
-		/* Loop until the user closes the window */
+
 		while (!glfwWindowShouldClose(window))
 		{
-			/* Render here */
 			renderer.Clear();
+			test.OnUpdate(0.0f);
+			test.OnRender();
 
 			ImGui_ImplGlfwGL3_NewFrame();
-
-			{
-				glm::mat4 model = glm::translate(glm::mat4(1.0f), translationA);
-				glm::mat4 mvp = proj * view * model;
-		
-				shader.Bind();
-				shader.SetUniformMat4f("u_MVP", mvp);
-
-				renderer.Draw(vao, ibo, shader);
-			}
-			
-			{
-				glm::mat4 model = glm::translate(glm::mat4(1.0f), translationB);
-				glm::mat4 mvp = proj * view * model;
-				shader.Bind();
-				shader.SetUniformMat4f("u_MVP", mvp);
-
-				renderer.Draw(vao, ibo, shader);
-			}
-
-			if (r > 1.0f)
-			{
-				increment = -0.05f;
-			}
-			else if (r < 0.05f)
-			{
-				increment = 0.05f;
-			}
-			r += increment;
-
-			{
-				ImGui::SliderFloat3("Translation A", &translationA.x, 0.0f, 960.0f);
-				ImGui::SliderFloat3("Translation B", &translationB.x, 0.0f, 960.0f);
-				ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-			}
-
+			test.OnImGuiRender();
 			ImGui::Render();
 			ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
 
-			/* Swap front and back buffers */
 			glfwSwapBuffers(window);
-
-			/* Poll for and process events */
 			glfwPollEvents();
 		}
 	}
