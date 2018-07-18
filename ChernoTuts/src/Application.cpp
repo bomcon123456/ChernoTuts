@@ -31,7 +31,7 @@ int main(void)
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	/* Create a windowed mode window and its OpenGL context */
-	window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+	window = glfwCreateWindow(960, 540, "Hello World", NULL, NULL);
 	if (!window)
 	{
 		glfwTerminate();
@@ -48,10 +48,10 @@ int main(void)
 	}
 	{
 		float verticies[] = {
-			-0.5f, -0.5f, 0.0f, 0.0f,
-			 0.5f, -0.5f, 1.0f, 0.0f,
-			 0.5f, 0.5f, 1.0f, 1.0f,
-			 -0.5f, 0.5f, 0.0f, 1.0f
+			100.0f, 100.0f, 0.0f, 0.0f,
+			200.0f, 100.0f, 1.0f, 0.0f,
+			200.0f, 200.0f, 1.0f, 1.0f,
+			100.0f, 200.0f, 0.0f, 1.0f
 		};
 
 		unsigned int indices[] = {
@@ -76,9 +76,12 @@ int main(void)
 		 * Basically because our window is 640x480 ~ 4:3
 		 * Those params * 2 => 4:3
 		 * Create sth has a distance of 3 units (top-bottom) and 4 units (left-right)
-		 * Essentialy we're creating the boundaries for the window, e.g if we set params -4.0,4.0,-3.0,3.0, the picture will be twice as smaller
+		 * Essentially we're creating the boundaries for the window, e.g if we set params -4.0,4.0,-3.0,3.0, the picture will be twice as smaller
+		 * UPDATE:
+		 * So now, we will work everything in pixel space (yes, verts too), then multiply those two together, we will have the normalized value that
+		 * suits the [-1.0f,1.0f] axis
 		 */
-		glm::mat4 proj = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, -1.0f, 1.0f);
+		glm::mat4 proj = glm::ortho(0.0f, 960.0f, 0.0f, 540.0f, -1.0f, 1.0f);
 
 		Shader shader("res/shaders/Basic.shader");
 		shader.Bind();
