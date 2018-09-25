@@ -52,9 +52,62 @@ int main(void)
 		std::cout << "Error Glew_INIT" << std::endl;
 	}
 	{
+<<<<<<< HEAD
 		GLCall(glEnable(GL_BLEND));
 		GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
+=======
+		float verticies[] = {
+			100.0f, 100.0f, 0.0f, 0.0f,
+			200.0f, 100.0f, 1.0f, 0.0f,
+			200.0f, 200.0f, 1.0f, 1.0f,
+			100.0f, 200.0f, 0.0f, 1.0f
+		};
+
+		unsigned int indices[] = {
+			0, 1, 2,
+			2, 3, 0
+		};
+
+		GLCall(glEnable(GL_BLEND));
+		GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+
+		VertexArray vao;
+		VertexBuffer vbo(verticies, 4 * 4 * sizeof(float));
+		VertexBufferLayout layout;
+
+		layout.Push<float>(2);
+		layout.Push<float>(2);
+		vao.AddBuffer(vbo, layout);
+
+		IndexBuffer ibo(indices, 6);
+
+		/*
+		 * Basically because our window is 640x480 ~ 4:3
+		 * Those params * 2 => 4:3
+		 * Create sth has a distance of 3 units (top-bottom) and 4 units (left-right)
+		 * Essentially we're creating the boundaries for the window, e.g if we set params -4.0,4.0,-3.0,3.0, the picture will be twice as smaller
+		 * UPDATE:
+		 * So now, we will work everything in pixel space (yes, verts too), then multiply those two together, we will have the normalized value that
+		 * suits the [-1.0f,1.0f] axis
+		 */
+		glm::mat4 proj = glm::ortho(0.0f, 960.0f, 0.0f, 540.0f, -1.0f, 1.0f);
+		glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-100.0f, 0.0f, 0.0f));
+
+		Shader shader("res/shaders/Basic.shader");
+		shader.Bind();
+		shader.SetUniform4f("u_Color", 0.1f, 0.6f, 0.9f,1.0f);
+
+		Texture texture("res/textures/agave.png");
+		texture.Bind(0);
+		shader.SetUniform1i("u_Texture",0);
+
+		vao.Unbind();
+		shader.Unbind();
+		vbo.Unbind();
+		ibo.Unbind();
+
+>>>>>>> parent of 45b492e... Render multiple objects
 		Renderer renderer;
 
 		//						IMGUI
@@ -67,7 +120,11 @@ int main(void)
 		test::TestMenu* testMenu = new test::TestMenu(currentTest);
 		currentTest = testMenu;
 
+<<<<<<< HEAD
 		testMenu->RegisterTest<test::TestClearColor>("Clear Color");
+=======
+		glm::vec3 translation(200.0f, 200.0f, 0.0f);
+>>>>>>> parent of 45b492e... Render multiple objects
 
 		while (!glfwWindowShouldClose(window))
 		{
@@ -76,6 +133,7 @@ int main(void)
 
 			ImGui_ImplGlfwGL3_NewFrame();
 
+<<<<<<< HEAD
 			if (currentTest)
 			{
 				currentTest->OnUpdate(0.0f);
@@ -88,6 +146,31 @@ int main(void)
 				}
 				currentTest->OnImGuiRender();
 				ImGui::End();
+=======
+			glm::mat4 model = glm::translate(glm::mat4(1.0f), translation);
+			glm::mat4 mvp = proj * view * model;
+
+
+			shader.Bind();
+			shader.SetUniform4f("u_Color", r, 0.3f, 1.0f, 1.0f);
+			shader.SetUniformMat4f("u_MVP", mvp);
+
+			renderer.Draw(vao, ibo, shader);
+
+			if (r > 1.0f)
+			{
+				increment = -0.05f;
+			}
+			else if (r < 0.05f)
+			{
+				increment = 0.05f;
+			}
+			r += increment;
+
+			{
+				ImGui::SliderFloat3("Translation", &translation.x, 0.0f, 960.0f);
+				ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+>>>>>>> parent of 45b492e... Render multiple objects
 			}
 
 			ImGui::Render();
