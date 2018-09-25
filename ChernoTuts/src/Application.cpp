@@ -121,7 +121,11 @@ int main(void)
 		currentTest = testMenu;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 		testMenu->RegisterTest<test::TestClearColor>("Clear Color");
+=======
+		glm::vec3 translation(200.0f, 200.0f, 0.0f);
+>>>>>>> parent of 45b492e... Render multiple objects
 =======
 		glm::vec3 translation(200.0f, 200.0f, 0.0f);
 >>>>>>> parent of 45b492e... Render multiple objects
@@ -133,6 +137,7 @@ int main(void)
 
 			ImGui_ImplGlfwGL3_NewFrame();
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 			if (currentTest)
 			{
@@ -147,6 +152,8 @@ int main(void)
 				currentTest->OnImGuiRender();
 				ImGui::End();
 =======
+=======
+>>>>>>> parent of 45b492e... Render multiple objects
 			glm::mat4 model = glm::translate(glm::mat4(1.0f), translation);
 			glm::mat4 mvp = proj * view * model;
 
