@@ -12,8 +12,8 @@ struct ShaderProgramSource
 class Shader
 {
 private:
-	std::string m_FilePath;
-	unsigned int m_RendererID;
+	std::string m_FilePath;					// Location of our shader code
+	unsigned int m_RendererID;				// ID of our shader program
 	// caching for uniforms
 	std::unordered_map<std::string, int> m_UniformLocationCache;
 public:

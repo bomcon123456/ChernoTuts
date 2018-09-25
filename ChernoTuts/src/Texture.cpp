@@ -8,14 +8,15 @@ Texture::Texture(const std::string& path) :
 {
 	stbi_set_flip_vertically_on_load(1);
 	// stbi_load will write in the Width/Height/BPP variable
-	// 4 is number of channel we want to write (in this case : R/G/B/A)
+	// 4 is number of color channel we want to write (in this case : R/G/B/A)
 	m_LocalBuffer = stbi_load(path.c_str(), &m_Width, &m_Height, &m_BPP, 4);
 
 	GLCall(glGenTextures(1, &m_RendererID));
 	GLCall(glBindTexture(GL_TEXTURE_2D, m_RendererID));
 
 	/* MUST DEFINE AT LEAST THESE 4 PARAMS OR WILL GET A BLACK IMAGE*/
-	// GL_TEXTURE_MIN_FILTER: if textures needs to be rendered smaller.
+	// GL_TEXTURE_MIN_FILTER: if textures needs to be rendered smaller. (minifying)
+	// GL_TEXTURE_MAG_FILTER: if textures needs to be rendered larger. (magnifying)
 	// GL_LINEAR: linearly resample anything
 	// GL_TEXTURE_WRAP_S: wrap horizontally
 	// GL_TEXTURE_WRAP_T: wrap vertically
