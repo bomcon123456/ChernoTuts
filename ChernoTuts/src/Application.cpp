@@ -9,8 +9,6 @@
 #include "Texture.h"
 #include "Shader.h"
 
-#include "tests/TestClearColor.h"
-
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -19,9 +17,6 @@
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
-
-#include "imgui/imgui.h"
-#include "imgui/imgui_impl_glfw_gl3.h"
 
 int main(void)
 {
@@ -52,58 +47,91 @@ int main(void)
 		std::cout << "Error Glew_INIT" << std::endl;
 	}
 	{
+		float verticies[] = {
+			100.0f, 100.0f, 0.0f, 0.0f,
+			200.0f, 100.0f, 1.0f, 0.0f,
+			200.0f, 200.0f, 1.0f, 1.0f,
+			100.0f, 200.0f, 0.0f, 1.0f
+		};
+
+		unsigned int indices[] = {
+			0, 1, 2,
+			2, 3, 0
+		};
+
 		GLCall(glEnable(GL_BLEND));
 		GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
+		VertexArray vao;
+		VertexBuffer vbo(verticies, 4 * 4 * sizeof(float));
+		VertexBufferLayout layout;
+
+		layout.Push<float>(2);
+		layout.Push<float>(2);
+		vao.AddBuffer(vbo, layout);
+
+		IndexBuffer ibo(indices, 6);
+
+		/*
+		 * Basically because our window is 640x480 ~ 4:3
+		 * Those params * 2 => 4:3
+		 * Create sth has a distance of 3 units (top-bottom) and 4 units (left-right)
+		 * Essentially we're creating the boundaries for the window, e.g if we set params -4.0,4.0,-3.0,3.0, the picture will be twice as smaller
+		 * UPDATE:
+		 * So now, we will work everything in pixel space (yes, verts too), then multiply those two together, we will have the normalized value that
+		 * suits the [-1.0f,1.0f] axis
+		 */
+		glm::mat4 proj = glm::ortho(0.0f, 960.0f, 0.0f, 540.0f, -1.0f, 1.0f);
+		glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-100.0f, 0.0f, 0.0f));
+		glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(200.0f, 200.0f, 0.0f));
+
+		glm::mat4 mvp = proj * view * model;
+
+		Shader shader("res/shaders/Basic.shader");
+		shader.Bind();
+		shader.SetUniform4f("u_Color", 0.1f, 0.6f, 0.9f,1.0f);
+		shader.SetUniformMat4f("u_MVP", mvp);
+
+		Texture texture("res/textures/agave.png");
+		texture.Bind(0);
+		shader.SetUniform1i("u_Texture",0);
+
+		vao.Unbind();
+		shader.Unbind();
+		vbo.Unbind();
+		ibo.Unbind();
+
 		Renderer renderer;
 
-		//						IMGUI
-		ImGui::CreateContext();
-		ImGui_ImplGlfwGL3_Init(window, true);
-		ImGui::StyleColorsDark();
-
-		//						IMGUI
-		test::Test* currentTest = nullptr;
-		test::TestMenu* testMenu = new test::TestMenu(currentTest);
-		currentTest = testMenu;
-
-		testMenu->RegisterTest<test::TestClearColor>("Clear Color");
-
+		float r = 0.0f;
+		float increment = 0.05f;
+		/* Loop until the user closes the window */
 		while (!glfwWindowShouldClose(window))
 		{
-			GLCall(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
+			/* Render here */
 			renderer.Clear();
 
-			ImGui_ImplGlfwGL3_NewFrame();
+			shader.Bind();
+			shader.SetUniform4f("u_Color", r, 0.3f, 1.0f, 1.0f);
 
-			if (currentTest)
+			renderer.Draw(vao, ibo, shader);
+
+			if (r > 1.0f)
 			{
-				currentTest->OnUpdate(0.0f);
-				currentTest->OnRender();
-				ImGui::Begin("Test");
-				if (currentTest != testMenu && ImGui::Button("<-"))
-				{
-					delete currentTest;
-					currentTest = testMenu;
-				}
-				currentTest->OnImGuiRender();
-				ImGui::End();
+				increment = -0.05f;
 			}
-
-			ImGui::Render();
-			ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
-
+			else if (r < 0.05f)
+			{
+				increment = 0.05f;
+			}
+			r += increment;
+			/* Swap front and back buffers */
 			glfwSwapBuffers(window);
+
+			/* Poll for and process events */
 			glfwPollEvents();
 		}
-		delete currentTest;
-		if (currentTest != testMenu)
-		{
-			delete testMenu;
-		}
 	}
-	ImGui_ImplGlfwGL3_Shutdown();
-	ImGui::DestroyContext();
 	glfwTerminate();
 	return 0;
 }
